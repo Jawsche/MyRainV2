@@ -31,13 +31,13 @@ public class ChunkBind : MonoBehaviour {
     private float p_facingDir = 1.0f;
 
 
-   
-    //public float a_jumpStrangth = 20.0f;
-    //[Range(1, 10)]
-    //public float fallMultiplier = 2.5f;
-    //[Range(1, 10)]
-    //public float lowJumpMultiplier = 2f;
-    
+
+    public float a_jumpStrangth = 20.0f;
+    [Range(1, 10)]
+    public float fallMultiplier = 2.5f;
+    [Range(1, 10)]
+    public float lowJumpMultiplier = 2f;
+
 
     // Use this for initialization
     void Start () {
@@ -62,7 +62,6 @@ public class ChunkBind : MonoBehaviour {
         {
             dirVecA = idealPosHead;
         }
-        //Debug.Log(dist);
 
 
 
@@ -72,10 +71,11 @@ public class ChunkBind : MonoBehaviour {
         //Vector3 sinVal = (Vector3.up ) * distance;
         //Debug.Log(sinVal);
 
-        returnStrength *= -Mathf.Exp(2f);
-        rigidBodyA.velocity += Vector2.Lerp(Vector2.zero, dirVecA * distA * returnStrength * returnStrengthRatioA, lerpTVal);
-        rigidBodyB.velocity += Vector2.Lerp(Vector2.zero, -dirVecA * distA * returnStrength * returnStrengthRatioB, lerpTVal);
+        if (distA <= 0.5f)
+            distA = 0.5f;
         
+        rigidBodyA.velocity += Vector2.Lerp(Vector2.zero, dirVecA * distA * (returnStrength * returnStrengthRatioA), lerpTVal);
+        rigidBodyB.velocity += Vector2.Lerp(Vector2.zero, -dirVecA * distA * (returnStrength * returnStrengthRatioB), lerpTVal);
 
         PlayerInput();
 
@@ -115,22 +115,23 @@ public class ChunkBind : MonoBehaviour {
             rigidBodyA.velocity += new Vector2(0f, moveSpeed * v * returnStrengthRatioA * 2f);
             rigidBodyB.velocity += new Vector2(0f, moveSpeed * v * returnStrengthRatioB * 2f);
         }
-        ////Jump
-        //if (CrossPlatformInputManager.GetButtonDown("Jump") && p_grounded)
-        //{
-        //    rigidBodyA.AddForce(Vector2.up * a_jumpStrangth, ForceMode2D.Impulse);
-        //    rigidBodyB.AddForce(Vector2.up * a_jumpStrangth, ForceMode2D.Impulse);
-        //}
-        //if (rigidBodyA.velocity.y < 0 && !p_grounded)// maybe not use p_grounded here
-        //{
-        //    rigidBodyA.velocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1f) * Time.deltaTime;
-        //    rigidBodyB.velocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1f) * Time.deltaTime;
-        //}
-        //else if (rigidBodyA.velocity.y > 0.0f && !CrossPlatformInputManager.GetButton("Jump"))
-        //{
-        //    rigidBodyA.velocity += Vector2.up * Physics2D.gravity.y * (lowJumpMultiplier - 1f) * Time.deltaTime;
-        //    rigidBodyB.velocity += Vector2.up * Physics2D.gravity.y * (lowJumpMultiplier - 1f) * Time.deltaTime;
-        //}
+
+        //Jump
+        if (CrossPlatformInputManager.GetButtonDown("Jump") && p_grounded)
+        {
+            rigidBodyA.AddForce(Vector2.up * a_jumpStrangth, ForceMode2D.Impulse);
+            rigidBodyB.AddForce(Vector2.up * a_jumpStrangth, ForceMode2D.Impulse);
+        }
+        if (rigidBodyA.velocity.y < 0 && !p_grounded)// maybe not use p_grounded here
+        {
+            rigidBodyA.velocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1f) * Time.deltaTime;
+            rigidBodyB.velocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1f) * Time.deltaTime;
+        }
+        else if (rigidBodyA.velocity.y > 0.0f && !CrossPlatformInputManager.GetButton("Jump"))
+        {
+            rigidBodyA.velocity += Vector2.up * Physics2D.gravity.y * (lowJumpMultiplier - 1f) * Time.deltaTime;
+            rigidBodyB.velocity += Vector2.up * Physics2D.gravity.y * (lowJumpMultiplier - 1f) * Time.deltaTime;
+        }
 
         //crouching
         if (CrossPlatformInputManager.GetButtonDown("Fire1") && p_standing == true)
@@ -140,7 +141,7 @@ public class ChunkBind : MonoBehaviour {
                 idealPosHead = new Vector2(1f, 0f);
             else if (p_facingDir == -1.0f)
                 idealPosHead = new Vector2(-1f, 0f);
-            moveSpeed *= 0.7f;
+            moveSpeed *= 0.4f;
         }
         //stand back up
         else if (CrossPlatformInputManager.GetButtonDown("Fire1") && p_standing == false)
@@ -154,7 +155,8 @@ public class ChunkBind : MonoBehaviour {
     private void CheckGrounded()
     {
         //Set Grounded variable
-        RaycastHit2D hit = Physics2D.Raycast(otherChunk.transform.position, -Vector2.up, 0.6f);
+        int layerMask = ~(1 << 8);
+        RaycastHit2D hit = Physics2D.Raycast(otherChunk.transform.position, -Vector2.up, 0.6f, layerMask);
         if (hit.collider != null)
         {
             p_grounded = true;
