@@ -12,7 +12,7 @@ public class ChunkBind : MonoBehaviour {
 
 
     public Vector2 idealPosHead = Vector2.up;
-    public float returnStrength = 17f;
+    public float returnStrength = 1f;
     [Range(0f, 5f)]
     public float returnDist = 1f;
     [Range (0f,1f)]
@@ -49,14 +49,7 @@ public class ChunkBind : MonoBehaviour {
 	// Update is called once per frame
 	void FixedUpdate () {
 
-        if(CrossPlatformInputManager.GetButton("Fire2"))
-        {
-            Vector3 pos = CrossPlatformInputManager.mousePosition;
-            Vector3 mousePt = Camera.main.ScreenToWorldPoint(pos);
-            Vector3 temp = mousePt;
-            temp.z = 0;
-            transform.position = temp;
-        }
+        
 
         returnStrengthRatioB = 1f - returnStrengthRatioA;
         Vector2 dirVecA;
@@ -79,7 +72,7 @@ public class ChunkBind : MonoBehaviour {
         //Vector3 sinVal = (Vector3.up ) * distance;
         //Debug.Log(sinVal);
 
-        
+        returnStrength *= -Mathf.Exp(2f);
         rigidBodyA.velocity += Vector2.Lerp(Vector2.zero, dirVecA * distA * returnStrength * returnStrengthRatioA, lerpTVal);
         rigidBodyB.velocity += Vector2.Lerp(Vector2.zero, -dirVecA * distA * returnStrength * returnStrengthRatioB, lerpTVal);
         
@@ -93,6 +86,17 @@ public class ChunkBind : MonoBehaviour {
 
     private void PlayerInput()
     {
+        //Debugging mouse snap
+        if (CrossPlatformInputManager.GetButton("Fire2"))
+        {
+            Vector3 pos = CrossPlatformInputManager.mousePosition;
+            Vector3 mousePt = Camera.main.ScreenToWorldPoint(pos);
+            Vector3 temp = mousePt;
+            temp.z = 0;
+            transform.position = temp;
+        }
+
+
         //Movement
         CheckGrounded();
         float h = CrossPlatformInputManager.GetAxis("Horizontal");
@@ -108,8 +112,8 @@ public class ChunkBind : MonoBehaviour {
         }
         if (v != 0)
         {
-            rigidBodyA.velocity += new Vector2(0f, moveSpeed * v * returnStrengthRatioA);
-            rigidBodyB.velocity += new Vector2(0f, moveSpeed * v * returnStrengthRatioB);
+            rigidBodyA.velocity += new Vector2(0f, moveSpeed * v * returnStrengthRatioA * 2f);
+            rigidBodyB.velocity += new Vector2(0f, moveSpeed * v * returnStrengthRatioB * 2f);
         }
         ////Jump
         //if (CrossPlatformInputManager.GetButtonDown("Jump") && p_grounded)
