@@ -27,7 +27,7 @@ public class ChunkBind : MonoBehaviour {
     
 
     private bool p_grounded = false;
-    private bool p_standing = false;
+    private bool p_standing = true;
     private float p_facingDir = 1.0f;
 
 
@@ -82,7 +82,7 @@ public class ChunkBind : MonoBehaviour {
         returnVec = dirVecA * (distA * distA);
         
 
-        Debug.Log(returnVec);
+        //Debug.Log(returnVec);
 
         rigidBodyA.velocity += returnVec * (returnStrength * returnStrengthRatioA);
         rigidBodyB.velocity -= returnVec * (returnStrength * returnStrengthRatioB);
@@ -120,14 +120,14 @@ public class ChunkBind : MonoBehaviour {
             rigidBodyA.velocity += new Vector2(moveSpeed * h , 0f);
             rigidBodyB.velocity += new Vector2(moveSpeed * h , 0f);
         }
-        if (v != 0)
-        {
-            rigidBodyA.velocity += new Vector2(0f, moveSpeed * v * returnStrengthRatioA * 2f);
-            rigidBodyB.velocity += new Vector2(0f, moveSpeed * v * returnStrengthRatioB * 2f);
-        }
+        //if (v != 0)
+        //{
+        //    rigidBodyA.velocity += new Vector2(0f, moveSpeed * v * returnStrengthRatioA * 2f);
+        //    rigidBodyB.velocity += new Vector2(0f, moveSpeed * v * returnStrengthRatioB * 2f);
+        //}
 
         //Jump
-        if (CrossPlatformInputManager.GetButtonDown("Jump") && p_grounded)
+        if (CrossPlatformInputManager.GetButtonDown("Jump") && p_grounded && p_standing)
         {
             rigidBodyA.AddForce(Vector2.up * a_jumpStrangth, ForceMode2D.Impulse);
             rigidBodyB.AddForce(Vector2.up * a_jumpStrangth, ForceMode2D.Impulse);
@@ -144,22 +144,32 @@ public class ChunkBind : MonoBehaviour {
         }
 
         //crouching
-        if (CrossPlatformInputManager.GetButtonDown("Fire1") && p_standing == true)
+        if (CrossPlatformInputManager.GetAxis("Vertical") < 0f && p_standing && p_grounded)
         {
             p_standing = false;
-            if (p_facingDir == 1.0f)
-                idealPosHead = new Vector2(1f, 0f);
-            else if (p_facingDir == -1.0f)
-                idealPosHead = new Vector2(-1f, 0f);
+            idealPosHead = new Vector2(p_facingDir, 0f);
             moveSpeed *= 0.4f;
         }
         //stand back up
-        else if (CrossPlatformInputManager.GetButtonDown("Fire1") && p_standing == false)
+        else if (CrossPlatformInputManager.GetAxis("Vertical") > 0f && p_standing == false && p_grounded)
         {
             p_standing = true;
             idealPosHead = new Vector2(0f, 1f);
             moveSpeed = moveSpeedInit;
         }
+        //switching directions while crouched
+        if (!p_standing)
+        {
+            if(p_facingDir == 1.0f)
+            {
+                idealPosHead = new Vector2(p_facingDir, 0f);
+            }
+            else if(p_facingDir == -1.0f)
+            {
+                idealPosHead = new Vector2(p_facingDir, 0f);
+            }
+        }
+        
     }
 
     private void CheckGrounded()
