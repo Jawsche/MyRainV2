@@ -345,7 +345,7 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1
-  m_LinearDrag: 1.1
+  m_LinearDrag: 6
   m_AngularDrag: 0
   m_GravityScale: 1
   m_Material: {fileID: 0}
@@ -675,7 +675,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 990819994}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.05, y: -10.1, z: 0}
+  m_LocalPosition: {x: 0.05, y: -10.51, z: 0}
   m_LocalScale: {x: 60, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -843,7 +843,7 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1
-  m_LinearDrag: 1.1
+  m_LinearDrag: 6
   m_AngularDrag: 0
   m_GravityScale: 1
   m_Material: {fileID: 0}
@@ -904,7 +904,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2046592452}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 4.21, y: 1.5, z: 0}
+  m_LocalPosition: {x: 0.02, y: 1.66, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1143890923}
@@ -922,18 +922,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   otherChunk: {fileID: 667078367}
-  moveSpeed: 0.5
+  moveSpeed: 0.65
   idealPosHead: {x: 0, y: 1}
   returnStrength: 1
   returnDist: 1
   returnStrengthRatioA: 0.7
-  returnStrengthRatioB: 0.4
+  returnStrengthRatioB: 0.3
   lerpTVal: 1
   rigidBodyA: {fileID: 0}
   rigidBodyB: {fileID: 0}
-  a_jumpStrangth: 7
-  fallMultiplier: 2.5
-  lowJumpMultiplier: 2
+  a_jumpStrangth: 17
+  fallMultiplier: 5
+  lowJumpMultiplier: 4
 --- !u!61 &2046592457
 BoxCollider2D:
   m_ObjectHideFlags: 0

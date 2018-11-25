@@ -71,11 +71,21 @@ public class ChunkBind : MonoBehaviour {
         //Vector3 sinVal = (Vector3.up ) * distance;
         //Debug.Log(sinVal);
 
-        if (distA <= 0.5f)
-            distA = 0.5f;
+        if (distA <= 1f)
+            distA = 1f;
+
+        //rigidBodyA.velocity += Vector2.Lerp(Vector2.zero, dirVecA * distA * (returnStrength * returnStrengthRatioA), lerpTVal);
+        //rigidBodyB.velocity += Vector2.Lerp(Vector2.zero, -dirVecA * distA * (returnStrength * returnStrengthRatioB), lerpTVal);
+
+
+        Vector2 returnVec;
+        returnVec = dirVecA * (distA * distA);
         
-        rigidBodyA.velocity += Vector2.Lerp(Vector2.zero, dirVecA * distA * (returnStrength * returnStrengthRatioA), lerpTVal);
-        rigidBodyB.velocity += Vector2.Lerp(Vector2.zero, -dirVecA * distA * (returnStrength * returnStrengthRatioB), lerpTVal);
+
+        Debug.Log(returnVec);
+
+        rigidBodyA.velocity += returnVec * (returnStrength * returnStrengthRatioA);
+        rigidBodyB.velocity -= returnVec * (returnStrength * returnStrengthRatioB);
 
         PlayerInput();
 
@@ -107,8 +117,8 @@ public class ChunkBind : MonoBehaviour {
             p_facingDir = 1.0f;
         if (h != 0)
         {
-            rigidBodyA.velocity += new Vector2(moveSpeed * h * returnStrengthRatioA, 0f);
-            rigidBodyB.velocity += new Vector2(moveSpeed * h * returnStrengthRatioB, 0f);
+            rigidBodyA.velocity += new Vector2(moveSpeed * h , 0f);
+            rigidBodyB.velocity += new Vector2(moveSpeed * h , 0f);
         }
         if (v != 0)
         {
@@ -173,8 +183,8 @@ public class ChunkBind : MonoBehaviour {
     {
         //Gizmos.DrawSphere(idealPosA, 0.1f);
         //Gizmos.DrawSphere(idealPosB, 0.1f);
-
-        Debug.DrawLine(transform.position, otherChunk.transform.position, Color.blue);
+        float distA = Vector2.Distance(otherChunk.transform.position, transform.position);
+        Debug.DrawLine(transform.position, otherChunk.transform.position, Color.Lerp(Color.blue, Color.red, distA * Time.deltaTime));
         Gizmos.DrawSphere(transform.position, 0.05f);
         Gizmos.DrawSphere(otherChunk.transform.position, 0.05f);
     }
