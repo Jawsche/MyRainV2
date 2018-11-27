@@ -29,6 +29,8 @@ public class ChunkBind : MonoBehaviour {
     private bool p_grounded = false;
     private bool p_standing = true;
     private float p_facingDir = 1.0f;
+    private bool stickDownLast = false;
+    private float currentTime = 0f;
 
 
 
@@ -38,6 +40,8 @@ public class ChunkBind : MonoBehaviour {
     [Range(1, 10)]
     public float lowJumpMultiplier = 2f;
 
+    public float amplitude;
+    public float period;
 
     // Use this for initialization
     void Start () {
@@ -110,15 +114,44 @@ public class ChunkBind : MonoBehaviour {
         //Movement
         CheckGrounded();
         float h = CrossPlatformInputManager.GetAxis("Horizontal");
-        float v = CrossPlatformInputManager.GetAxis("Vertical");
+        //float v = CrossPlatformInputManager.GetAxis("Vertical");
         if (h < 0.0f)
             p_facingDir = -1.0f;
         if (h > 0.0f)
             p_facingDir = 1.0f;
+        
+        
         if (h != 0)
         {
             rigidBodyA.velocity += new Vector2(moveSpeed * h , 0f);
             rigidBodyB.velocity += new Vector2(moveSpeed * h , 0f);
+
+            //GetAxis as buttonDown
+            if (Input.GetAxisRaw("Horizontal") != 0)
+            {
+                if (!stickDownLast)
+                {
+                    currentTime = 0.5f;
+                    //Debug.Log("Grp");
+                }
+
+                stickDownLast = true;
+            }
+            else
+                stickDownLast = false;
+
+            
+            //Bobbing
+            if (p_standing)
+            {
+                currentTime += Time.deltaTime;
+                Debug.Log(currentTime);
+                float theta = currentTime / period;
+                float distance = amplitude * Mathf.Sin(theta);
+                Vector2 sinVal = (Vector2.up) * (distance);
+                rigidBodyB.velocity += sinVal;
+                //Debug.Log(sinVal);
+            }
         }
         //if (v != 0)
         //{
@@ -176,11 +209,11 @@ public class ChunkBind : MonoBehaviour {
     {
         //Set Grounded variable
         int layerMask = ~(1 << 8);
-        RaycastHit2D hit = Physics2D.Raycast(otherChunk.transform.position, -Vector2.up, 0.6f, layerMask);
+        RaycastHit2D hit = Physics2D.Raycast(otherChunk.transform.position, -Vector2.up, 0.8f, layerMask);
         if (hit.collider != null)
         {
             p_grounded = true;
-            Debug.DrawRay(otherChunk.transform.position, Vector3.down * 0.6f, Color.red);
+            Debug.DrawRay(otherChunk.transform.position, Vector3.down * 0.8f, Color.red);
             //Debug.Log(hit.collider.name);
         }
         else
