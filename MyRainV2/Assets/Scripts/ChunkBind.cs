@@ -31,6 +31,7 @@ public class ChunkBind : MonoBehaviour {
     private float p_facingDir = 1.0f;
     private bool stickDownLast = false;
     private float currentTime = 0f;
+    private float prevFrameDirection;
 
 
 
@@ -48,6 +49,7 @@ public class ChunkBind : MonoBehaviour {
         rigidBodyA = GetComponent<Rigidbody2D>();
         rigidBodyB = otherChunk.GetComponent<Rigidbody2D>();
         moveSpeedInit = moveSpeed;
+        prevFrameDirection = p_facingDir;
     }
 	
 	// Update is called once per frame
@@ -145,7 +147,7 @@ public class ChunkBind : MonoBehaviour {
             if (p_standing)
             {
                 currentTime += Time.deltaTime;
-                Debug.Log(currentTime);
+                //Debug.Log(currentTime);
                 float theta = currentTime / period;
                 float distance = amplitude * Mathf.Sin(theta);
                 Vector2 sinVal = (Vector2.up) * (distance);
@@ -187,22 +189,23 @@ public class ChunkBind : MonoBehaviour {
         else if (CrossPlatformInputManager.GetAxis("Vertical") > 0f && p_standing == false && p_grounded)
         {
             p_standing = true;
+            //rigidBodyA.AddForce(Vector2.up * 6f, ForceMode2D.Impulse);
             idealPosHead = new Vector2(0f, 1f);
             moveSpeed = moveSpeedInit;
         }
         //switching directions while crouched
         if (!p_standing)
         {
-            if(p_facingDir == 1.0f)
+            idealPosHead = new Vector2(p_facingDir, 0f);
+
+            if(prevFrameDirection != p_facingDir)
             {
-                idealPosHead = new Vector2(p_facingDir, 0f);
+                Debug.Log("Changed prone direction");
+                rigidBodyA.AddForce(Vector2.up * 15f, ForceMode2D.Impulse);
             }
-            else if(p_facingDir == -1.0f)
-            {
-                idealPosHead = new Vector2(p_facingDir, 0f);
-            }
+            
         }
-        
+        prevFrameDirection = p_facingDir;
     }
 
     private void CheckGrounded()
