@@ -200,7 +200,7 @@ public class ChunkBind : MonoBehaviour {
 
             if(prevFrameDirection != p_facingDir)
             {
-                Debug.Log("Changed prone direction");
+                //Debug.Log("Changed prone direction");
                 rigidBodyA.AddForce(Vector2.up * 15f, ForceMode2D.Impulse);
             }
             
