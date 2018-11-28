@@ -21,16 +21,19 @@ public class ChunkBind : MonoBehaviour {
     public float returnStrengthRatioB;
     [Range(0f, 1f)]
     public float lerpTVal = 1f;
+    public float bobAmount = 4f;
 
     public Rigidbody2D rigidBodyA;
     public Rigidbody2D rigidBodyB;
     
 
     private bool p_grounded = false;
+    private bool p_onWall = false;
     private bool p_standing = true;
     private float p_facingDir = 1.0f;
     private bool stickDownLast = false;
     private float currentTime = 0f;
+    private float currentTimeJumps = 100f;
     private float prevFrameDirection;
 
 
@@ -40,9 +43,9 @@ public class ChunkBind : MonoBehaviour {
     public float fallMultiplier = 2.5f;
     [Range(1, 10)]
     public float lowJumpMultiplier = 2f;
+    [Range(1, 10)]
+    public float jumpCooldown = 1f;
 
-    public float amplitude;
-    public float period;
 
     // Use this for initialization
     void Start () {
@@ -115,25 +118,35 @@ public class ChunkBind : MonoBehaviour {
 
         //Movement
         CheckGrounded();
+        CheckSides();
         float h = CrossPlatformInputManager.GetAxis("Horizontal");
         //float v = CrossPlatformInputManager.GetAxis("Vertical");
         if (h < 0.0f)
-            p_facingDir = -1.0f;
+        {
+            if(!p_onWall)
+                p_facingDir = -1.0f;
+            else p_facingDir = 1.0f;
+        }
         if (h > 0.0f)
-            p_facingDir = 1.0f;
+        {
+            if (!p_onWall)
+                p_facingDir = 1.0f;
+            else p_facingDir = -1.0f;
+        }
         
         
         if (h != 0)
         {
             rigidBodyA.velocity += new Vector2(moveSpeed * h , 0f);
             rigidBodyB.velocity += new Vector2(moveSpeed * h , 0f);
+            
 
             //GetAxis as buttonDown
             if (Input.GetAxisRaw("Horizontal") != 0)
             {
                 if (!stickDownLast)
                 {
-                    currentTime = 0.5f;
+                    currentTime = 0f;
                     //Debug.Log("Grp");
                 }
 
@@ -147,12 +160,13 @@ public class ChunkBind : MonoBehaviour {
             if (p_standing)
             {
                 currentTime += Time.deltaTime;
-                //Debug.Log(currentTime);
-                float theta = currentTime / period;
-                float distance = amplitude * Mathf.Sin(theta);
-                Vector2 sinVal = (Vector2.up) * (distance);
-                rigidBodyB.velocity += sinVal;
-                //Debug.Log(sinVal);
+                if(currentTime >= 0.15f)
+                {
+                    //Debug.Log("BANG");
+                    rigidBodyB.AddForce(Vector2.up * bobAmount, ForceMode2D.Impulse);
+                    currentTime = 0f;
+                }
+
             }
         }
         //if (v != 0)
@@ -162,10 +176,19 @@ public class ChunkBind : MonoBehaviour {
         //}
 
         //Jump
-        if (CrossPlatformInputManager.GetButtonDown("Jump") && p_grounded && p_standing)
+        currentTimeJumps += Time.deltaTime;
+        if (CrossPlatformInputManager.GetButtonDown("Jump") && ((p_grounded && p_standing) || p_onWall) && currentTimeJumps > jumpCooldown)
         {
-            rigidBodyA.AddForce(Vector2.up * a_jumpStrangth, ForceMode2D.Impulse);
-            rigidBodyB.AddForce(Vector2.up * a_jumpStrangth, ForceMode2D.Impulse);
+            //wall jump
+            if (p_onWall && !p_grounded)
+            {
+                rigidBodyB.velocity += Vector2.right * p_facingDir * a_jumpStrangth *1.5f;
+                rigidBodyA.velocity += Vector2.right * p_facingDir * a_jumpStrangth * 1.5f;
+            }
+            rigidBodyA.velocity += Vector2.up * a_jumpStrangth;
+            rigidBodyB.velocity += Vector2.up * a_jumpStrangth;
+
+            currentTimeJumps = 0f;
         }
         if (rigidBodyA.velocity.y < 0 && !p_grounded)// maybe not use p_grounded here
         {
@@ -223,9 +246,39 @@ public class ChunkBind : MonoBehaviour {
         {
             p_grounded = false;
         }
+        
+        
+    }
+    private void CheckSides()
+    {
+        int layerMask = ~(1 << 8);
+        RaycastHit2D hitLeft = Physics2D.Raycast(otherChunk.transform.position, -Vector2.right, 0.8f, layerMask);
+        if (hitLeft.collider != null)
+        {
+            //p_grounded = true;
+            p_onWall = true;
+            Debug.DrawRay(otherChunk.transform.position, Vector3.left * 0.8f, Color.red);
+            currentTimeJumps = 100f;
+            //Debug.Log(hit.collider.name);
+        }
+        
+       
+
+        RaycastHit2D hitRight = Physics2D.Raycast(otherChunk.transform.position, Vector2.right, 0.8f, layerMask);
+        if (hitRight.collider != null)
+        {
+            //p_grounded = true;
+            p_onWall = true;
+            Debug.DrawRay(otherChunk.transform.position, Vector3.right * 0.8f, Color.red);
+            currentTimeJumps = 100f;
+            //Debug.Log(hit.collider.name);
+        }
+        else if (hitRight.collider == null && hitLeft.collider == null)
+            p_onWall = false;
+
     }
 
-    private void OnDrawGizmos()
+        private void OnDrawGizmos()
     {
         //Gizmos.DrawSphere(idealPosA, 0.1f);
         //Gizmos.DrawSphere(idealPosB, 0.1f);
