@@ -1105,7 +1105,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 0.2
   m_AngularDrag: 0
-  m_GravityScale: 0
+  m_GravityScale: 1
   m_Material: {fileID: 0}
   m_Interpolate: 1
   m_SleepingMode: 0
@@ -1641,10 +1641,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   topChunkRB: {fileID: 696310055}
   bottomChunkRB: {fileID: 1284358852}
-  moveSpeed: 0.1
+  moveSpeed: 0.01
   getToDiagRatioTop: 0.5
   getToDiagRatioBottom: 0.5
-  fHorizontalDamping: 0.22
+  fHorizontalDamping: 0.9
   getToDiag: 1.7
   returnDist: 0
   p_grounded: 0
@@ -2088,7 +2088,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 0.2
   m_AngularDrag: 0
-  m_GravityScale: 0
+  m_GravityScale: 1
   m_Material: {fileID: 0}
   m_Interpolate: 1
   m_SleepingMode: 0

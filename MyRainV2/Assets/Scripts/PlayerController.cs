@@ -130,14 +130,14 @@ public class PlayerController : MonoBehaviour {
         if (HorizontalInput != 0f)
         {
             topChunkVel.x += HorizontalInput * moveSpeed;
-            topChunkRB.velocity *= Mathf.Pow(1f - fHorizontalDamping, Time.deltaTime * 10f);
+            topChunkVel.x *= Mathf.Pow(1f - fHorizontalDamping, Time.deltaTime * 10f);
             bottomChunkVel.x += HorizontalInput * moveSpeed;
-            bottomChunkRB.velocity *= Mathf.Pow(1f - fHorizontalDamping, Time.deltaTime * 10f);
+            bottomChunkVel.x *= Mathf.Pow(1f - fHorizontalDamping, Time.deltaTime * 10f);
         }
         else
         {
-            topChunkVel.x += 0f;
-            bottomChunkVel.x += 0f;
+            topChunkVel.x = 0f;
+            bottomChunkVel.x = 0f;
         }
     }
 
