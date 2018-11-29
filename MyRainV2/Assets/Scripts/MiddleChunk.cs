@@ -24,5 +24,10 @@ public class MiddleChunk : MonoBehaviour {
         temp.z = angle;
         transform.eulerAngles = temp;
 
+        Vector3 tempScale = transform.localScale;
+        tempScale.y = dirVec.magnitude;
+        transform.localScale = tempScale;
+
+
 	}
 }
