@@ -86,19 +86,19 @@ public class PlayerController : MonoBehaviour {
         ///////////////////////////////////////////////////////
         ///
 
-        Vector2 desVelTop = topChunkRB.position - (getToDiag - distance) * dirVecTop * getToDiagRatioTop;
-        Vector2 desVelBot = bottomChunkRB.position + (getToDiag - distance) * dirVec * getToDiagRatioBottom;
+        Vector2 desVelTop = topChunkRB.velocity - (getToDiag - distance) * dirVecTop * getToDiagRatioTop;
+        Vector2 desVelBot = bottomChunkRB.velocity + (getToDiag - distance) * dirVec * getToDiagRatioBottom;
 
         //topChunkRB.AddForce(addVel(desVelTop, topChunkRB));
         //bottomChunkRB.AddForce(addVel(desVelBot, bottomChunkRB));
-        //desVelTop *= Mathf.Pow(1f - getToDiagDamping, Time.deltaTime * 10f);
-        //desVelBot *= Mathf.Pow(1f - getToDiagDamping, Time.deltaTime * 10f);
+        desVelTop *= Mathf.Pow(1f - getToDiagDamping, Time.deltaTime * 10f);
+        desVelBot *= Mathf.Pow(1f - getToDiagDamping, Time.deltaTime * 10f);
 
-        //desVelTop.y += Physics2D.gravity.y * topChunkRB.gravityScale;
-        //desVelBot.y += Physics2D.gravity.y * bottomChunkRB.gravityScale;
+        desVelTop.y += Physics2D.gravity.y * topChunkRB.gravityScale;
+        desVelBot.y += Physics2D.gravity.y * bottomChunkRB.gravityScale;
 
-        topChunkRB.MovePosition(desVelTop);
-        bottomChunkRB.MovePosition(desVelBot);
+        topChunkRB.velocity = desVelTop;
+        bottomChunkRB.velocity = desVelBot;
         
     }
 

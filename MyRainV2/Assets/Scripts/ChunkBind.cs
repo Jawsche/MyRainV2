@@ -83,11 +83,12 @@ public class ChunkBind : MonoBehaviour {
 
         Vector2 returnVec;
         returnVec = dirVec * (distA * distA);
-
-
         
-        rigidBodyA.MovePosition(rigidBodyA.position - (returnDist - distA) * dirVec * returnStrengthRatioA);
-        rigidBodyB.MovePosition(rigidBodyB.position + (returnDist - distA) * dirVec * returnStrengthRatioB);
+
+        //Debug.Log(returnVec);
+
+        rigidBodyA.velocity += returnVec * (returnStrength * returnStrengthRatioA);
+        rigidBodyB.velocity -= returnVec * (returnStrength * returnStrengthRatioB);
 
         //Exponential damping////////////////////////////////////////////////////////
         //rigidBodyA.velocity *= Mathf.Pow(1f - getToRestDamping, Time.deltaTime * 10f);
@@ -174,31 +175,31 @@ public class ChunkBind : MonoBehaviour {
         }
         
 
-        ////Jump
-        //currentTimeJumps += Time.deltaTime;
-        //if (CrossPlatformInputManager.GetButtonDown("Jump") && ((p_grounded && p_standing) || p_onWall) && currentTimeJumps > jumpCooldown)
-        //{
-        //    //wall jump
-        //    if (p_onWall && !p_grounded)
-        //    {
-        //        rigidBodyB.velocity += Vector2.right * p_facingDir * a_jumpStrangth *1.5f;
-        //        rigidBodyA.velocity += Vector2.right * p_facingDir * a_jumpStrangth * 1.5f;
-        //    }
-        //    rigidBodyA.velocity += Vector2.up * a_jumpStrangth;
-        //    rigidBodyB.velocity += Vector2.up * a_jumpStrangth;
+        //Jump
+        currentTimeJumps += Time.deltaTime;
+        if (CrossPlatformInputManager.GetButtonDown("Jump") && ((p_grounded && p_standing) || p_onWall) && currentTimeJumps > jumpCooldown)
+        {
+            //wall jump
+            if (p_onWall && !p_grounded)
+            {
+                rigidBodyB.velocity += Vector2.right * p_facingDir * a_jumpStrangth *1.5f;
+                rigidBodyA.velocity += Vector2.right * p_facingDir * a_jumpStrangth * 1.5f;
+            }
+            rigidBodyA.velocity += Vector2.up * a_jumpStrangth;
+            rigidBodyB.velocity += Vector2.up * a_jumpStrangth;
 
-        //    currentTimeJumps = 0f;
-        //}
-        //if (rigidBodyA.velocity.y < 0 && !p_grounded)// maybe not use p_grounded here
-        //{
-        //    rigidBodyA.velocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1f) * Time.deltaTime;
-        //    rigidBodyB.velocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1f) * Time.deltaTime;
-        //}
-        //else if (rigidBodyA.velocity.y > 0.0f && !CrossPlatformInputManager.GetButton("Jump"))
-        //{
-        //    rigidBodyA.velocity += Vector2.up * Physics2D.gravity.y * (lowJumpMultiplier - 1f) * Time.deltaTime;
-        //    rigidBodyB.velocity += Vector2.up * Physics2D.gravity.y * (lowJumpMultiplier - 1f) * Time.deltaTime;
-        //}
+            currentTimeJumps = 0f;
+        }
+        if (rigidBodyA.velocity.y < 0 && !p_grounded)// maybe not use p_grounded here
+        {
+            rigidBodyA.velocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1f) * Time.deltaTime;
+            rigidBodyB.velocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1f) * Time.deltaTime;
+        }
+        else if (rigidBodyA.velocity.y > 0.0f && !CrossPlatformInputManager.GetButton("Jump"))
+        {
+            rigidBodyA.velocity += Vector2.up * Physics2D.gravity.y * (lowJumpMultiplier - 1f) * Time.deltaTime;
+            rigidBodyB.velocity += Vector2.up * Physics2D.gravity.y * (lowJumpMultiplier - 1f) * Time.deltaTime;
+        }
 
         //crouching
         if (CrossPlatformInputManager.GetAxisRaw("Vertical") == -1f && p_standing && p_grounded)
