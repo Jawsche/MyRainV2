@@ -22,10 +22,13 @@ public class ChunkBind : MonoBehaviour {
     [Range(0f, 1f)]
     public float lerpTVal = 1f;
 <<<<<<< HEAD
+<<<<<<< HEAD
     [Range(0f, 0.99f)]
     public float getToRestDamping = 0.99f;
     [Range(0f, 0.1f)]
     public float gravityMultiplier = 0.01f;
+=======
+>>>>>>> parent of ec36f5d... Cleaned up just a lil bit
 =======
 >>>>>>> parent of ec36f5d... Cleaned up just a lil bit
     public float bobAmount = 4f;
@@ -86,11 +89,14 @@ public class ChunkBind : MonoBehaviour {
         // Old lerp to point method /////////////////////////
         //rigidBodyA.velocity += Vector2.Lerp(Vector2.zero, dirVecA * distA * (returnStrength * returnStrengthRatioA), lerpTVal);
         //rigidBodyB.velocity += Vector2.Lerp(Vector2.zero, -dirVecA * distA * (returnStrength * returnStrengthRatioB), lerpTVal);
+<<<<<<< HEAD
         ////////////////////////////////////////////////////
         ///
         //Old Quadratic for return damping/////////////////
         //Vector2 returnVec;
         //returnVec = dirVec * (distA * distA);
+=======
+>>>>>>> parent of ec36f5d... Cleaned up just a lil bit
         ////////////////////////////////////////////////////
 
 <<<<<<< HEAD
@@ -102,6 +108,7 @@ public class ChunkBind : MonoBehaviour {
 
 
 
+<<<<<<< HEAD
         sVecA = rigidBodyA.position - (returnDist - distA) * dirVec * returnStrengthRatioA;
         sVecB = rigidBodyB.position + (returnDist - distA) * dirVec * returnStrengthRatioB;
         if (!p_grounded)
@@ -131,6 +138,8 @@ public class ChunkBind : MonoBehaviour {
 
 
 =======
+=======
+>>>>>>> parent of ec36f5d... Cleaned up just a lil bit
         PlayerInput();
 >>>>>>> parent of ec36f5d... Cleaned up just a lil bit
 
