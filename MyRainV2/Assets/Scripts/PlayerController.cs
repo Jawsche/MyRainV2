@@ -13,6 +13,8 @@ public class PlayerController : MonoBehaviour {
     public float getToDiagRatioBottom = 0.5f;
     [Range(0f, 1f)]
     public float fHorizontalDamping = 0.22f;
+    [Range(0f, 0.99f)]
+    public float getToDiagDamping = 0.99f;
     public float getToDiag = 17f;
     public float returnDist = 0f;
     public bool p_grounded = false;
@@ -21,7 +23,7 @@ public class PlayerController : MonoBehaviour {
     public Vector2 bottomChunkVel;
 
 
-    private void Update()
+    private void FixedUpdate()
     {
         //getToDiagRatioBottom = 1f - getToDiagRatioTop;
 
@@ -35,8 +37,8 @@ public class PlayerController : MonoBehaviour {
 
         //Movement();
 
-        topChunkRB.position += topChunkVel;
-        bottomChunkRB.position += bottomChunkVel;
+        //topChunkRB.position += topChunkVel;
+        //bottomChunkRB.position += bottomChunkVel;
         
         float distance = Vector3.Distance(topChunkRB.position, bottomChunkRB.position);
         Vector2 dirVecTop = moveToPoint(topChunkRB.position, (bottomChunkRB.position + (Vector2.up * getToDiag)));
@@ -45,14 +47,14 @@ public class PlayerController : MonoBehaviour {
         Vector2 dirVec = moveToPoint(topChunkRB.position, bottomChunkRB.position);
 
 
-        //Old pseudo Code///////////////////////////////////////
-        float dirX = dirVec.x;
-        float dirY = dirVec.y;
-        topChunkVel.x = topChunkVel.x - (getToDiag - distance) * dirX * getToDiagRatioTop;
-        topChunkVel.y = topChunkVel.y - (getToDiag - distance) * dirY * getToDiagRatioTop;
-        bottomChunkVel.x = bottomChunkVel.x + (getToDiag - distance) * dirX * getToDiagRatioBottom;
-        bottomChunkVel.y = bottomChunkVel.y + (getToDiag - distance) * dirY * getToDiagRatioBottom;
-        ///////////////////////////////////////////////////////
+        ////Old pseudo Code///////////////////////////////////////
+        //float dirX = dirVec.x;
+        //float dirY = dirVec.y;
+        //topChunkVel.x = topChunkVel.x - (getToDiag - distance) * dirX * getToDiagRatioTop;
+        //topChunkVel.y = topChunkVel.y - (getToDiag - distance) * dirY * getToDiagRatioTop;
+        //bottomChunkVel.x = bottomChunkVel.x + (getToDiag - distance) * dirX * getToDiagRatioBottom;
+        //bottomChunkVel.y = bottomChunkVel.y + (getToDiag - distance) * dirY * getToDiagRatioBottom;
+        /////////////////////////////////////////////////////////
 
 
         ///
@@ -73,14 +75,16 @@ public class PlayerController : MonoBehaviour {
         ///////////////////////////////////////////////////////
         ///
 
-        Vector2 desVelTop = topChunkRB.position - (getToDiag - distance) * dirVec * getToDiagRatioTop;
-        Vector2 desVelBot = bottomChunkRB.position + (getToDiag - distance) * dirVec * getToDiagRatioBottom;
+        Vector2 desVelTop = topChunkRB.velocity - (getToDiag - distance) * dirVecTop * getToDiagRatioTop;
+        Vector2 desVelBot = bottomChunkRB.velocity + (getToDiag - distance) * dirVec * getToDiagRatioBottom;
 
         //topChunkRB.AddForce(addVel(desVelTop, topChunkRB));
         //bottomChunkRB.AddForce(addVel(desVelBot, bottomChunkRB));
-        
-        topChunkRB.position = desVelTop;
-        bottomChunkRB.position = desVelBot;
+        desVelTop *= Mathf.Pow(1f - getToDiagDamping, Time.deltaTime * 10f);
+        desVelBot *= Mathf.Pow(1f - getToDiagDamping, Time.deltaTime * 10f);
+
+        topChunkRB.velocity = desVelTop;
+        bottomChunkRB.velocity = desVelBot;
         
     }
 
