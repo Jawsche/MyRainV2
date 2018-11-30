@@ -25,9 +25,20 @@ public class PlayerController : MonoBehaviour {
 
     private void FixedUpdate()
     {
+
+        // Debugging mouse snap
+        if (Input.GetButton("Fire2"))
+        {
+            Vector3 pos = Input.mousePosition;
+            Vector3 mousePt = Camera.main.ScreenToWorldPoint(pos);
+            Vector3 temp = mousePt;
+            temp.z = 0;
+            bottomChunkRB.position = temp;
+        }
+
         //getToDiagRatioBottom = 1f - getToDiagRatioTop;
 
-       
+
         //CheckGrounded();
         //if (p_grounded)
         //{
@@ -35,7 +46,7 @@ public class PlayerController : MonoBehaviour {
         //    bottomChunkVel.y = 0f;
         //}
 
-        //Movement();
+        Movement();
 
         //topChunkRB.position += topChunkVel;
         //bottomChunkRB.position += bottomChunkVel;
@@ -82,6 +93,9 @@ public class PlayerController : MonoBehaviour {
         //bottomChunkRB.AddForce(addVel(desVelBot, bottomChunkRB));
         desVelTop *= Mathf.Pow(1f - getToDiagDamping, Time.deltaTime * 10f);
         desVelBot *= Mathf.Pow(1f - getToDiagDamping, Time.deltaTime * 10f);
+
+        desVelTop.y += Physics2D.gravity.y * topChunkRB.gravityScale;
+        desVelBot.y += Physics2D.gravity.y * bottomChunkRB.gravityScale;
 
         topChunkRB.velocity = desVelTop;
         bottomChunkRB.velocity = desVelBot;

@@ -58,9 +58,8 @@ public class ChunkBind : MonoBehaviour {
 	// Update is called once per frame
 	void FixedUpdate () {
 
-        
-
         returnStrengthRatioB = 1f - returnStrengthRatioA;
+
         Vector2 dirVecA;
         float distA = Vector2.Distance(otherChunk.transform.position, transform.position);
         if (distA > returnDist)
@@ -71,21 +70,13 @@ public class ChunkBind : MonoBehaviour {
         {
             dirVecA = idealPosHead;
         }
-
-
-
-        //float theta = Time.timeSinceLevelLoad / period;
-        //float distance = amplitude * Mathf.Sin(theta) + 0.5f;
-        ////transform.position = targetA + Vector3.up * distance;
-        //Vector3 sinVal = (Vector3.up ) * distance;
-        //Debug.Log(sinVal);
-
+        //distance variable capping
         if (distA <= 1f)
             distA = 1f;
-
+        // Old lerp to point method /////////////////////////
         //rigidBodyA.velocity += Vector2.Lerp(Vector2.zero, dirVecA * distA * (returnStrength * returnStrengthRatioA), lerpTVal);
         //rigidBodyB.velocity += Vector2.Lerp(Vector2.zero, -dirVecA * distA * (returnStrength * returnStrengthRatioB), lerpTVal);
-
+        ////////////////////////////////////////////////////
 
         Vector2 returnVec;
         returnVec = dirVecA * (distA * distA);
@@ -141,13 +132,12 @@ public class ChunkBind : MonoBehaviour {
             rigidBodyB.velocity += new Vector2(moveSpeed * h , 0f);
             
 
-            //GetAxis as buttonDown
+            //GetAxis as buttonDown for bobbing
             if (Input.GetAxisRaw("Horizontal") != 0)
             {
                 if (!stickDownLast)
                 {
                     currentTime = 0f;
-                    //Debug.Log("Grp");
                 }
 
                 stickDownLast = true;
@@ -155,7 +145,14 @@ public class ChunkBind : MonoBehaviour {
             else
                 stickDownLast = false;
 
-            
+            //Vertical Movement///////////////////////////////////////
+            //if (v != 0)
+            //{
+            //    rigidBodyA.velocity += new Vector2(0f, moveSpeed * v * returnStrengthRatioA * 2f);
+            //    rigidBodyB.velocity += new Vector2(0f, moveSpeed * v * returnStrengthRatioB * 2f);
+            //}
+            //////////////////////////////////////////////////////////
+
             //Bobbing
             if (p_standing)
             {
@@ -169,11 +166,7 @@ public class ChunkBind : MonoBehaviour {
 
             }
         }
-        //if (v != 0)
-        //{
-        //    rigidBodyA.velocity += new Vector2(0f, moveSpeed * v * returnStrengthRatioA * 2f);
-        //    rigidBodyB.velocity += new Vector2(0f, moveSpeed * v * returnStrengthRatioB * 2f);
-        //}
+        
 
         //Jump
         currentTimeJumps += Time.deltaTime;
@@ -212,7 +205,6 @@ public class ChunkBind : MonoBehaviour {
         else if (CrossPlatformInputManager.GetAxis("Vertical") > 0f && p_standing == false && p_grounded)
         {
             p_standing = true;
-            //rigidBodyA.AddForce(Vector2.up * 6f, ForceMode2D.Impulse);
             idealPosHead = new Vector2(0f, 1f);
             moveSpeed = moveSpeedInit;
         }
@@ -223,8 +215,7 @@ public class ChunkBind : MonoBehaviour {
 
             if(prevFrameDirection != p_facingDir)
             {
-                //Debug.Log("Changed prone direction");
-                rigidBodyA.AddForce(Vector2.up * 15f, ForceMode2D.Impulse);
+                rigidBodyA.AddForce(Vector2.up * 20f, ForceMode2D.Impulse);
             }
             
         }
@@ -240,7 +231,6 @@ public class ChunkBind : MonoBehaviour {
         {
             p_grounded = true;
             Debug.DrawRay(otherChunk.transform.position, Vector3.down * 0.8f, Color.red);
-            //Debug.Log(hit.collider.name);
         }
         else
         {
@@ -255,11 +245,9 @@ public class ChunkBind : MonoBehaviour {
         RaycastHit2D hitLeft = Physics2D.Raycast(otherChunk.transform.position, -Vector2.right, 0.8f, layerMask);
         if (hitLeft.collider != null)
         {
-            //p_grounded = true;
             p_onWall = true;
             Debug.DrawRay(otherChunk.transform.position, Vector3.left * 0.8f, Color.red);
             currentTimeJumps = 100f;
-            //Debug.Log(hit.collider.name);
         }
         
        
@@ -267,21 +255,17 @@ public class ChunkBind : MonoBehaviour {
         RaycastHit2D hitRight = Physics2D.Raycast(otherChunk.transform.position, Vector2.right, 0.8f, layerMask);
         if (hitRight.collider != null)
         {
-            //p_grounded = true;
             p_onWall = true;
             Debug.DrawRay(otherChunk.transform.position, Vector3.right * 0.8f, Color.red);
             currentTimeJumps = 100f;
-            //Debug.Log(hit.collider.name);
         }
         else if (hitRight.collider == null && hitLeft.collider == null)
             p_onWall = false;
 
     }
 
-        private void OnDrawGizmos()
+    private void OnDrawGizmos()
     {
-        //Gizmos.DrawSphere(idealPosA, 0.1f);
-        //Gizmos.DrawSphere(idealPosB, 0.1f);
         float distA = Vector2.Distance(otherChunk.transform.position, transform.position);
         Debug.DrawLine(transform.position, otherChunk.transform.position, Color.Lerp(Color.blue, Color.red, distA * Time.deltaTime));
         Gizmos.DrawSphere(transform.position, 0.05f);
