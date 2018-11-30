@@ -21,13 +21,10 @@ public class ChunkBind : MonoBehaviour {
     public float returnStrengthRatioB;
     [Range(0f, 1f)]
     public float lerpTVal = 1f;
-<<<<<<< HEAD
     [Range(0f, 0.99f)]
     public float getToRestDamping = 0.99f;
     [Range(0f, 0.1f)]
     public float gravityMultiplier = 0.01f;
-=======
->>>>>>> parent of ec36f5d... Cleaned up just a lil bit
     public float bobAmount = 4f;
 
     public Rigidbody2D rigidBodyA;
@@ -58,7 +55,7 @@ public class ChunkBind : MonoBehaviour {
 
 
     // Use this for initialization
-    void Start () {
+    void Awake () {
         rigidBodyA = GetComponent<Rigidbody2D>();
         rigidBodyB = otherChunk.GetComponent<Rigidbody2D>();
         moveSpeedInit = moveSpeed;
@@ -70,22 +67,23 @@ public class ChunkBind : MonoBehaviour {
 
         //returnStrengthRatioB = 1f - returnStrengthRatioA;
 
-        Vector2 dirVecA;
+        Vector2 dirVec;
         float distA = Vector2.Distance(otherChunk.transform.position, transform.position);
         if (distA > returnDist)
         {
-            dirVecA = (otherChunk.transform.position - transform.position).normalized;
+            dirVec = (otherChunk.transform.position - transform.position).normalized;
         }
         else
         {
-            dirVecA = idealPosHead;
+            dirVec = idealPosHead;
         }
         //distance variable capping
         if (distA <= 1f)
             distA = 1f;
-        // Old lerp to point method /////////////////////////
-        //rigidBodyA.velocity += Vector2.Lerp(Vector2.zero, dirVecA * distA * (returnStrength * returnStrengthRatioA), lerpTVal);
-        //rigidBodyB.velocity += Vector2.Lerp(Vector2.zero, -dirVecA * distA * (returnStrength * returnStrengthRatioB), lerpTVal);
+
+        // Old lerp-to-point method /////////////////////////
+        //rigidBodyA.velocity += Vector2.Lerp(Vector2.zero, dirVec * distA * (returnStrength * returnStrengthRatioA), lerpTVal);
+        //rigidBodyB.velocity += Vector2.Lerp(Vector2.zero, -dirVec * distA * (returnStrength * returnStrengthRatioB), lerpTVal);
         ////////////////////////////////////////////////////
         ///
         //Old Quadratic for return damping/////////////////
@@ -93,12 +91,6 @@ public class ChunkBind : MonoBehaviour {
         //returnVec = dirVec * (distA * distA);
         ////////////////////////////////////////////////////
 
-<<<<<<< HEAD
-=======
-        Vector2 returnVec;
-        returnVec = dirVecA * (distA * distA);
-        
->>>>>>> parent of ec36f5d... Cleaned up just a lil bit
 
 
 
@@ -124,15 +116,11 @@ public class ChunkBind : MonoBehaviour {
             rigidBodyA.position = temp;
         }
 
-<<<<<<< HEAD
         //Exponential damping////////////////////////////////////////////////////////
         //rigidBodyA.velocity *= Mathf.Pow(1f - getToRestDamping, Time.deltaTime * 10f);
         //rigidBodyB.velocity *= Mathf.Pow(1f - getToRestDamping, Time.deltaTime * 10f);
 
 
-=======
-        PlayerInput();
->>>>>>> parent of ec36f5d... Cleaned up just a lil bit
 
 
     }
@@ -232,14 +220,14 @@ public class ChunkBind : MonoBehaviour {
         
 
         //crouching
-        if (CrossPlatformInputManager.GetAxis("Vertical") < 0f && p_standing && p_grounded)
+        if (CrossPlatformInputManager.GetAxisRaw("Vertical") == -1f && p_standing && p_grounded)
         {
             p_standing = false;
             idealPosHead = new Vector2(p_facingDir, 0f);
             moveSpeed *= 0.4f;
         }
         //stand back up
-        else if (CrossPlatformInputManager.GetAxis("Vertical") > 0f && p_standing == false && p_grounded)
+        else if (CrossPlatformInputManager.GetAxisRaw("Vertical") == 1f && p_standing == false && p_grounded)
         {
             p_standing = true;
             idealPosHead = new Vector2(0f, 1f);
