@@ -95,15 +95,15 @@ public class ChunkBind : MonoBehaviour {
         returnVec = Vector2.Lerp(Vector2.zero, dirVecA * (distA * distA), LerpTVal);
         //Debug.Log(returnVec);
 
-        //Some BS Im trying
-        Vector2 desVelTop = rigidBodyA.position - (returnDist - distA) * dirVecA * returnStrengthRatioA;
-        Vector2 desVelBot = rigidBodyB.position + (returnDist - distA) * dirVecA * returnStrengthRatioB;
-        rigidBodyA.MovePosition(desVelTop);
-        rigidBodyB.MovePosition(desVelBot);
+        ////Some BS Im trying
+        //Vector2 desVelTop = rigidBodyA.position - (returnDist - distA) * dirVecA * returnStrengthRatioA;
+        //Vector2 desVelBot = rigidBodyB.position + (returnDist - distA) * dirVecA * returnStrengthRatioB;
+        //rigidBodyA.MovePosition(desVelTop);
+        //rigidBodyB.MovePosition(desVelBot);
 
         //binding
-        //rigidBodyA.AddForce(returnVec * (returnStrength * returnStrengthRatioA));
-        //rigidBodyB.AddForce(-returnVec * (returnStrength * returnStrengthRatioB));
+        rigidBodyA.AddForce(returnVec * (returnStrength * returnStrengthRatioA));
+        rigidBodyB.AddForce(-returnVec * (returnStrength * returnStrengthRatioB));
 
         // Quadratic Drag
         Vector2 dragforceA = -QuadraticDragConstantA * rigidBodyA.velocity.normalized * rigidBodyA.velocity.sqrMagnitude;
