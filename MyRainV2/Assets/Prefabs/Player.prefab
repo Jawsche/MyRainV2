@@ -147,7 +147,7 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1
-  m_LinearDrag: 6
+  m_LinearDrag: 0
   m_AngularDrag: 0
   m_GravityScale: 3
   m_Material: {fileID: 0}
@@ -167,7 +167,7 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1
-  m_LinearDrag: 6
+  m_LinearDrag: 0
   m_AngularDrag: 0
   m_GravityScale: 3
   m_Material: {fileID: 0}
@@ -217,17 +217,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   otherChunk: {fileID: 1056701201463010}
-  moveSpeed: 0.65
   idealPosHead: {x: 0, y: 1}
-  returnStrength: 3
   returnDist: 1
+  moveSpeed: 0.3
+  moveSpeedAir: 0.15
+  returnStrength: 150
+  LerpTVal: 1
   returnStrengthRatioA: 0.7
-  returnStrengthRatioB: 0.3
-  lerpTVal: 1
-  bobAmount: 4
+  returnStrengthRatioB: 0.2
+  QuadraticDragConstantA: 0.01
+  QuadraticDragConstantB: 0.01
+  gravityScale: 5
+  bobAmount: 0
   rigidBodyA: {fileID: 50168170425674142}
   rigidBodyB: {fileID: 50363869633028826}
-  a_jumpStrangth: 23
+  a_jumpStrangth: 20
   fallMultiplier: 10
   lowJumpMultiplier: 4
   jumpCooldown: 1
