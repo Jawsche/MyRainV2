@@ -7,20 +7,24 @@ public class ChunkBind : MonoBehaviour {
 
     public GameObject otherChunk;
 
-    public float moveSpeed = 0.5f;
-    private float moveSpeedInit;
+    
 
 
     public Vector2 idealPosHead = Vector2.up;
-    public float returnStrength = 1f;
     [Range(0f, 5f)]
     public float returnDist = 1f;
+    public float moveSpeed = 0.5f;
+    private float moveSpeedInit;
+    public float returnStrength = 1f;
     [Range (0f,1f)]
     public float returnStrengthRatioA = 0.7f;
     [Range(0f, 1f)]
     public float returnStrengthRatioB;
     [Range(0f, 1f)]
-    public float lerpTVal = 1f;
+    public float QuadraticDragConstantA = 0f;
+    [Range(0f, 1f)]
+    public float QuadraticDragConstantB = 0f;
+    public float gravityScale = 1f;
     public float bobAmount = 4f;
 
     public Rigidbody2D rigidBodyA;
@@ -58,7 +62,11 @@ public class ChunkBind : MonoBehaviour {
 	// Update is called once per frame
 	void FixedUpdate () {
 
-        returnStrengthRatioB = 1f - returnStrengthRatioA;
+        //returnStrengthRatioB = 1f - returnStrengthRatioA;
+        rigidBodyA.gravityScale = gravityScale;
+        rigidBodyB.gravityScale = gravityScale;
+        //rigidBodyA.drag = QuadraticDragConstant;
+        //rigidBodyB.drag = QuadraticDragConstant;
 
         Vector2 dirVecA;
         float distA = Vector2.Distance(otherChunk.transform.position, transform.position);
@@ -80,12 +88,19 @@ public class ChunkBind : MonoBehaviour {
 
         Vector2 returnVec;
         returnVec = dirVecA * (distA * distA);
+
         
 
         //Debug.Log(returnVec);
 
-        rigidBodyA.velocity += returnVec * (returnStrength * returnStrengthRatioA);
-        rigidBodyB.velocity -= returnVec * (returnStrength * returnStrengthRatioB);
+        rigidBodyA.AddForce(returnVec * (returnStrength * returnStrengthRatioA));
+        rigidBodyB.AddForce(-returnVec * (returnStrength * returnStrengthRatioB));
+
+
+        Vector2 dragforceA = -QuadraticDragConstantA * rigidBodyA.velocity.normalized * rigidBodyA.velocity.sqrMagnitude;
+        Vector2 dragforceB = -QuadraticDragConstantB * rigidBodyB.velocity.normalized * rigidBodyB.velocity.sqrMagnitude;
+        rigidBodyA.AddForce(dragforceA);
+        rigidBodyB.AddForce(dragforceB);
 
         PlayerInput();
 
@@ -110,8 +125,8 @@ public class ChunkBind : MonoBehaviour {
         //Movement
         CheckGrounded();
         CheckSides();
-        float h = CrossPlatformInputManager.GetAxis("Horizontal");
-        //float v = CrossPlatformInputManager.GetAxis("Vertical");
+        float h = CrossPlatformInputManager.GetAxisRaw("Horizontal");
+        float v = CrossPlatformInputManager.GetAxisRaw("Vertical");
         if (h < 0.0f)
         {
             if(!p_onWall)
@@ -130,28 +145,19 @@ public class ChunkBind : MonoBehaviour {
         {
             rigidBodyA.velocity += new Vector2(moveSpeed * h , 0f);
             rigidBodyB.velocity += new Vector2(moveSpeed * h , 0f);
-            
+
 
             //GetAxis as buttonDown for bobbing
-            if (Input.GetAxisRaw("Horizontal") != 0)
-            {
-                if (!stickDownLast)
+            if (!stickDownLast)
                 {
                     currentTime = 0f;
                 }
 
                 stickDownLast = true;
-            }
-            else
-                stickDownLast = false;
+            
+            
 
-            //Vertical Movement///////////////////////////////////////
-            //if (v != 0)
-            //{
-            //    rigidBodyA.velocity += new Vector2(0f, moveSpeed * v * returnStrengthRatioA * 2f);
-            //    rigidBodyB.velocity += new Vector2(0f, moveSpeed * v * returnStrengthRatioB * 2f);
-            //}
-            //////////////////////////////////////////////////////////
+            
 
             //Bobbing
             if (p_standing)
@@ -165,8 +171,16 @@ public class ChunkBind : MonoBehaviour {
                 }
 
             }
-        }
-        
+        }else stickDownLast = false;
+
+        //////Vertical Movement///////////////////////////////////////
+        //if (v != 0)
+        //{
+        //    rigidBodyA.velocity += new Vector2(0f, moveSpeed * v * 20f);
+        //    rigidBodyB.velocity += new Vector2(0f, moveSpeed * v * 20f);
+        //}
+        //////////////////////////////////////////////////////////
+
 
         //Jump
         currentTimeJumps += Time.deltaTime;
@@ -175,7 +189,7 @@ public class ChunkBind : MonoBehaviour {
             //wall jump
             if (p_onWall && !p_grounded)
             {
-                rigidBodyB.velocity += Vector2.right * p_facingDir * a_jumpStrangth *1.5f;
+                rigidBodyB.velocity += Vector2.right * p_facingDir * a_jumpStrangth * 1.5f;
                 rigidBodyA.velocity += Vector2.right * p_facingDir * a_jumpStrangth * 1.5f;
             }
             rigidBodyA.velocity += Vector2.up * a_jumpStrangth;
@@ -183,16 +197,16 @@ public class ChunkBind : MonoBehaviour {
 
             currentTimeJumps = 0f;
         }
-        if (rigidBodyA.velocity.y < 0 && !p_grounded)// maybe not use p_grounded here
-        {
-            rigidBodyA.velocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1f) * Time.deltaTime;
-            rigidBodyB.velocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1f) * Time.deltaTime;
-        }
-        else if (rigidBodyA.velocity.y > 0.0f && !CrossPlatformInputManager.GetButton("Jump"))
-        {
-            rigidBodyA.velocity += Vector2.up * Physics2D.gravity.y * (lowJumpMultiplier - 1f) * Time.deltaTime;
-            rigidBodyB.velocity += Vector2.up * Physics2D.gravity.y * (lowJumpMultiplier - 1f) * Time.deltaTime;
-        }
+        //if (rigidBodyA.velocity.y < 0 && !p_grounded)// maybe not use p_grounded here
+        //{
+        //    rigidBodyA.velocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1f) * Time.deltaTime;
+        //    rigidBodyB.velocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1f) * Time.deltaTime;
+        //}
+        //else if (rigidBodyA.velocity.y > 0.0f && !CrossPlatformInputManager.GetButton("Jump"))
+        //{
+        //    rigidBodyA.velocity += Vector2.up * Physics2D.gravity.y * (lowJumpMultiplier - 1f) * Time.deltaTime;
+        //    rigidBodyB.velocity += Vector2.up * Physics2D.gravity.y * (lowJumpMultiplier - 1f) * Time.deltaTime;
+        //}
 
         //crouching
         if (CrossPlatformInputManager.GetAxis("Vertical") < 0f && p_standing && p_grounded)
