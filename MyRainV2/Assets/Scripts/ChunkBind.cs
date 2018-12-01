@@ -15,7 +15,11 @@ public class ChunkBind : MonoBehaviour {
     public float returnDist = 1f;
     public float moveSpeed = 0.5f;
     private float moveSpeedInit;
+    public float moveSpeedAir = 0.5f;
+    private float moveSpeedAirInit;
     public float returnStrength = 1f;
+    [Range(0f, 1f)]
+    public float LerpTVal = 1f;
     [Range (0f,1f)]
     public float returnStrengthRatioA = 0.7f;
     [Range(0f, 1f)]
@@ -56,6 +60,7 @@ public class ChunkBind : MonoBehaviour {
         rigidBodyA = GetComponent<Rigidbody2D>();
         rigidBodyB = otherChunk.GetComponent<Rigidbody2D>();
         moveSpeedInit = moveSpeed;
+        moveSpeedAirInit = moveSpeedAir;
         prevFrameDirection = p_facingDir;
     }
 	
@@ -87,7 +92,7 @@ public class ChunkBind : MonoBehaviour {
         ////////////////////////////////////////////////////
 
         Vector2 returnVec;
-        returnVec = dirVecA * (distA * distA);
+        returnVec = Vector2.Lerp(Vector2.zero, dirVecA * (distA * distA), LerpTVal);
 
         
 
@@ -143,6 +148,10 @@ public class ChunkBind : MonoBehaviour {
         
         if (h != 0)
         {
+            if (!p_grounded)
+                moveSpeed = moveSpeedAir;
+            else moveSpeed = moveSpeedInit;
+
             rigidBodyA.velocity += new Vector2(moveSpeed * h , 0f);
             rigidBodyB.velocity += new Vector2(moveSpeed * h , 0f);
 
