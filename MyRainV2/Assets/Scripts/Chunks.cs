@@ -15,51 +15,73 @@ public class Chunks : MonoBehaviour {
 
     public float trgDistBtwn = 1f;
 
-    [Range (0f, 1f)]
+    [Range(0f, 1f)]
     public float ratioA = 0.7f;
     [Range(0f, 1f)]
     public float ratioB = 0.2f;
+    [Range(0f, 1f)]
+    public float dampA = 0.3f;
+    [Range(0f, 1f)]
+    public float dampB = 1f;
 
-    public Vector2 headOffset = new Vector2 (0f,1f);
+    public Vector2 headOffset = new Vector2(0f, 1f);
     Vector2 headOfssetInit;
     public Vector2 idealPosA;
     public float trgDistA = 0f;
     public Vector2 idealPosB;
     public float trgDistB = 0f;
 
+    public float bobAmplitude = 0.2f;
+    public float bobPeriod = 0.035f;
+
 
 
     // Use this for initialization
-    void Start () {
+    void Start() {
         thePlayer = Player.gameObject.GetComponent<CharacterController>();
         headOfssetInit = headOffset;
-	}
-	
-	// Update is called once per frame
-	void Update () {
-
-        //Saved for later; for flipping
-        //trgDistA = 1f - headOffset.normalized.magnitude;
-        
-        float distBtwn = Vector2.Distance(A.position, B.position);
-        Vector2 dirVecBtwn = (B.position - A.position).normalized;
-
-
-        if (thePlayer.i_prone)
-        {
-            headOffset = new Vector2(thePlayer.i_facingDir, 0f);
-        }
-        else headOffset = headOfssetInit;
-
-
-        idealPosA = new Vector2(B.position.x + headOffset.x, B.position.y + headOffset.y);
-        Bind(A, idealPosA, trgDistA, ratioA);
-
-        idealPosB = Player.position;
-        Bind(B, idealPosB, trgDistB, ratioB);
     }
 
-    void Bind(Rigidbody2D rb, Vector2 target, float trgDist, float strength)
+    // Update is called once per frame
+    void Update() {
+        DataCollect();
+
+        Bind(A, idealPosA, trgDistA, ratioA, dampA);
+        Bind(B, idealPosB, trgDistB, ratioB, dampB);
+    }
+
+    void DataCollect()
+    {
+        //Saved for later; for side flipping
+        //trgDistA = 1f - headOffset.normalized.magnitude;
+
+        float distBtwn = Vector2.Distance(A.position, B.position);
+        Vector2 dirVecBtwn = (B.position - A.position).normalized;
+        idealPosA = new Vector2(B.position.x + headOffset.x, B.position.y + headOffset.y);
+        idealPosB = Player.position;
+
+        States();
+    }
+
+    void States()
+    {
+        if (thePlayer.i_prone) //if prone
+            headOffset = new Vector2(thePlayer.i_facingDir, 0f);
+        else if (!thePlayer.i_prone && thePlayer.i_isRunning)//standing & running
+        {
+            //leaning
+            headOffset = new Vector2(0.8f * thePlayer.i_facingDir, headOffset.y);
+
+            //Bobbing
+            float theta = Time.timeSinceLevelLoad / bobPeriod;
+            float distance = bobAmplitude * Mathf.Sin(theta);
+            idealPosB = idealPosB + Vector2.up * distance;
+        }
+        else headOffset = headOfssetInit;
+    }
+
+
+    void Bind(Rigidbody2D rb, Vector2 target, float trgDist, float strength, float dampVal)
     {
 
         Vector2 idealPos = target;
@@ -71,6 +93,23 @@ public class Chunks : MonoBehaviour {
         else
             dirVec = Vector2.up;
 
-        rb.MovePosition(rb.position - (trgDist - dist) * dirVec * strength);
+        Vector2 newPos = rb.position - (trgDist - dist) * dirVec * strength;
+
+        if (thePlayer.i_prone == false)
+        {
+            Vector2 trgPos = Vector2.Lerp(rb.position, newPos, dampVal);
+        }
+
+        else
+        {
+            //prettier stand when changing directions WIP, setting y = (‑(x^​2))+​1///////////
+            //float binomial = newPos.x - rb.position.x;
+            //newPos.y = ((binomial * binomial) +  1f);
+
+            Vector2 trgPos = Vector2.Lerp(rb.position, newPos, dampVal);
+        }
+
+
+        rb.MovePosition(newPos);
     }
 }

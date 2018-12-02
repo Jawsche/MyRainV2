@@ -13,6 +13,7 @@ public class CharacterController : MonoBehaviour
     public bool i_grounded = false;
     public bool i_prone = false;
     public float i_facingDir = 1.0f;
+    public bool i_isRunning = false;
 
     // Use this for initialization
     void Start()
@@ -36,12 +37,12 @@ public class CharacterController : MonoBehaviour
         PlayerInput();
 
         // going prone
-        if (!i_prone && i_grounded && Input.GetAxisRaw("Vertical") == -1f)
+        if (!i_prone && i_grounded && Input.GetAxisRaw("Vertical") <= -0.6f)
         {
             i_prone = true;
             a_moveSpeed /= 2f;
         }
-        if (i_prone && i_grounded && Input.GetAxisRaw("Vertical") == 1f)
+        if (i_prone && i_grounded && Input.GetAxisRaw("Vertical") >= 0.6f)
         {
             i_prone = false;
             a_moveSpeed *= 2f;
@@ -53,6 +54,11 @@ public class CharacterController : MonoBehaviour
     {
         float h = Input.GetAxisRaw("Horizontal");
         float v = Input.GetAxisRaw("Vertical");
+
+        if (h != 0f && i_grounded)
+            i_isRunning = true;
+        else i_isRunning = false;
+
 
         CheckGrounded();
         MovePlayer(h);
