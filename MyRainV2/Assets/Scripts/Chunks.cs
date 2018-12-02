@@ -25,6 +25,7 @@ public class Chunks : MonoBehaviour {
     public Vector2 idealPosA;
     public float trgDistA = 0f;
     public Vector2 idealPosB;
+    public float trgDistB = 0f;
 
 
 
@@ -37,10 +38,12 @@ public class Chunks : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-        idealPosA = new Vector2(B.position.x + headOffset.x, B.position.y + headOffset.y);
-        idealPosB = Player.position;
+        //Saved for later; for flipping
+        //trgDistA = 1f - headOffset.normalized.magnitude;
+        
         float distBtwn = Vector2.Distance(A.position, B.position);
-        Vector2 dirVecBtwn = (B.position - A.position).normalized;;
+        Vector2 dirVecBtwn = (B.position - A.position).normalized;
+
 
         if (thePlayer.i_prone)
         {
@@ -48,32 +51,26 @@ public class Chunks : MonoBehaviour {
         }
         else headOffset = headOfssetInit;
 
-        //A
-        float distA = Vector2.Distance(idealPosA, A.position);
-        trgDistA = 1f - headOffset.normalized.magnitude;
 
-        Vector2 dirVecA;
-        if (distA > 0f)
-            dirVecA = (idealPosA - A.position).normalized;
-        else
-            dirVecA = Vector2.up;
+        idealPosA = new Vector2(B.position.x + headOffset.x, B.position.y + headOffset.y);
+        Bind(A, idealPosA, trgDistA, ratioA);
 
-        A.MovePosition(A.position - (trgDistA - distA) * dirVecA * ratioA);
-
-        //B
-        float distB = Vector2.Distance(idealPosB, B.position);
-
-        Vector2 dirVecB;
-        if (distB > 0)
-            dirVecB = (idealPosB - B.position).normalized;
-        else if (distBtwn > trgDistBtwn)
-            dirVecB = -dirVecBtwn;
-        else
-            dirVecB = Vector2.zero;
-
-        B.MovePosition(B.position + (distB) * dirVecB * ratioB);
-
-
+        idealPosB = Player.position;
+        Bind(B, idealPosB, trgDistB, ratioB);
     }
 
+    void Bind(Rigidbody2D rb, Vector2 target, float trgDist, float strength)
+    {
+
+        Vector2 idealPos = target;
+        float dist = Vector2.Distance(idealPos, rb.position);
+
+        Vector2 dirVec;
+        if (dist > 0f)
+            dirVec = (idealPos - rb.position).normalized;
+        else
+            dirVec = Vector2.up;
+
+        rb.MovePosition(rb.position - (trgDist - dist) * dirVec * strength);
+    }
 }
