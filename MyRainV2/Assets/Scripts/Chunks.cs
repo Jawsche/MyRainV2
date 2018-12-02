@@ -21,6 +21,7 @@ public class Chunks : MonoBehaviour {
     public float ratioB = 0.2f;
 
     public Vector2 headOffset = new Vector2 (0f,1f);
+    Vector2 headOfssetInit;
     public Vector2 idealPosA;
     public float trgDistA = 0f;
     public Vector2 idealPosB;
@@ -30,6 +31,7 @@ public class Chunks : MonoBehaviour {
     // Use this for initialization
     void Start () {
         thePlayer = Player.gameObject.GetComponent<CharacterController>();
+        headOfssetInit = headOffset;
 	}
 	
 	// Update is called once per frame
@@ -40,6 +42,11 @@ public class Chunks : MonoBehaviour {
         float distBtwn = Vector2.Distance(A.position, B.position);
         Vector2 dirVecBtwn = (B.position - A.position).normalized;;
 
+        if (thePlayer.i_prone)
+        {
+            headOffset = new Vector2(thePlayer.i_facingDir, 0f);
+        }
+        else headOffset = headOfssetInit;
 
         //A
         float distA = Vector2.Distance(idealPosA, A.position);
@@ -68,4 +75,5 @@ public class Chunks : MonoBehaviour {
 
 
     }
+
 }
