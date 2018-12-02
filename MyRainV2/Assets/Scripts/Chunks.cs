@@ -5,6 +5,7 @@ using UnityEngine;
 public class Chunks : MonoBehaviour {
 
     public Transform Player;
+    CharacterController thePlayer;
 
     public Vector2 trgA;
     public Vector2 trgB;
@@ -14,22 +15,27 @@ public class Chunks : MonoBehaviour {
 
     public float trgDistBtwn = 1f;
 
+    [Range (0f, 1f)]
     public float ratioA = 0.7f;
+    [Range(0f, 1f)]
     public float ratioB = 0.2f;
 
+    public Vector2 headOffset = new Vector2 (0f,1f);
     public Vector2 idealPosA;
+    public float trgDistA = 0f;
     public Vector2 idealPosB;
+
 
 
     // Use this for initialization
     void Start () {
-		
+        thePlayer = Player.gameObject.GetComponent<CharacterController>();
 	}
 	
 	// Update is called once per frame
 	void Update () {
 
-        idealPosA = new Vector2(Player.position.x, Player.position.y + 1f);
+        idealPosA = new Vector2(B.position.x + headOffset.x, B.position.y + headOffset.y);
         idealPosB = Player.position;
         float distBtwn = Vector2.Distance(A.position, B.position);
         Vector2 dirVecBtwn = (B.position - A.position).normalized;;
@@ -37,16 +43,15 @@ public class Chunks : MonoBehaviour {
 
         //A
         float distA = Vector2.Distance(idealPosA, A.position);
+        trgDistA = 1f - headOffset.normalized.magnitude;
 
         Vector2 dirVecA;
-        if (distA > 0)
+        if (distA > 0f)
             dirVecA = (idealPosA - A.position).normalized;
-        else if (distBtwn > trgDistBtwn)
-            dirVecA = dirVecBtwn;
         else
-            dirVecA = Vector2.zero;
+            dirVecA = Vector2.up;
 
-        A.MovePosition(A.position - (0 - distA) * dirVecA * ratioA);
+        A.MovePosition(A.position - (trgDistA - distA) * dirVecA * ratioA);
 
         //B
         float distB = Vector2.Distance(idealPosB, B.position);
