@@ -485,12 +485,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09d88fb02b7d2cc4a8aae64fa0a1810b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  a_moveSpeed: 10
-  a_jumpPower: 20
+  a_moveSpeed: 38
+  a_jumpPower: 28
   i_grounded: 0
   i_prone: 0
   i_facingDir: 1
   i_isRunning: 0
+  damping: 0.4
 --- !u!4 &172472698
 Transform:
   m_ObjectHideFlags: 0
@@ -511,7 +512,7 @@ SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 172472694}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1

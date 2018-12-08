@@ -15,6 +15,8 @@ public class CharacterController : MonoBehaviour
     public float i_facingDir = 1.0f;
     public bool i_isRunning = false;
 
+    public float damping = 0.2f;
+
     // Use this for initialization
     void Start()
     {
@@ -48,6 +50,7 @@ public class CharacterController : MonoBehaviour
             a_moveSpeed *= 2f;
         }
 
+
     }
 
     void PlayerInput()
@@ -80,7 +83,8 @@ public class CharacterController : MonoBehaviour
         else if (horizontalInput < 0f)
             i_facingDir = -1f;
 
-        c_RB.velocity = new Vector2(horizontalInput * a_moveSpeed, c_RB.velocity.y);
+        c_RB.AddForce( new Vector2(horizontalInput * a_moveSpeed, c_RB.velocity.y));
+        c_RB.velocity *= Mathf.Pow(1f - damping, Time.deltaTime * 10f);
     }
 
     void Jump(float jumpX, float jumpY)

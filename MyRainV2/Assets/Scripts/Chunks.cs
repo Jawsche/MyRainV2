@@ -43,7 +43,7 @@ public class Chunks : MonoBehaviour {
     }
 
     // Update is called once per frame
-    void Update() {
+    void FixedUpdate() {
         DataCollect();
 
         Bind(A, idealPosA, trgDistA, ratioA, dampA);
@@ -70,7 +70,8 @@ public class Chunks : MonoBehaviour {
         else if (!thePlayer.i_prone && thePlayer.i_isRunning)//standing & running
         {
             //leaning
-            headOffset = new Vector2(0.8f * thePlayer.i_facingDir, headOffset.y);
+            //headOffset = new Vector2(0.8f * thePlayer.i_facingDir, headOffset.y);
+            //headOffset.Normalize();
 
             //Bobbing
             float theta = Time.timeSinceLevelLoad / bobPeriod;
