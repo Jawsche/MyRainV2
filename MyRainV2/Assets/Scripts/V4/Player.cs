@@ -8,7 +8,8 @@ public class Player : MonoBehaviour {
     public Rigidbody2D c_RB;
     public Rigidbody2D bottom_RB;
 
-    public float a_moveSpeed;
+    public float a_moveSpeedA;
+    public float a_moveSpeedB;
     public float a_jumpPower;
 
     public bool i_grounded = false;
@@ -40,12 +41,14 @@ public class Player : MonoBehaviour {
         if (!i_prone && i_grounded && Input.GetAxisRaw("Vertical") <= -0.6f)
         {
             i_prone = true;
-            a_moveSpeed /= 2f;
+            a_moveSpeedA /= 2f;
+            a_moveSpeedB /= 2f;
         }
         if (i_prone && i_grounded && Input.GetAxisRaw("Vertical") >= 0.6f)
         {
             i_prone = false;
-            a_moveSpeed *= 2f;
+            a_moveSpeedA *= 2f;
+            a_moveSpeedB *= 2f;
         }
 
 
@@ -82,10 +85,10 @@ public class Player : MonoBehaviour {
         else if (horizontalInput < 0f)
             i_facingDir = -1f;
 
-        c_RB.AddForce(new Vector2(horizontalInput * a_moveSpeed, c_RB.velocity.y));
+        c_RB.AddForce(new Vector2(horizontalInput * a_moveSpeedA, c_RB.velocity.y));
         c_RB.velocity *= Mathf.Pow(1f - damping, Time.deltaTime * 10f);
 
-        bottom_RB.AddForce(new Vector2(horizontalInput * a_moveSpeed, bottom_RB.velocity.y));
+        bottom_RB.AddForce(new Vector2(horizontalInput * a_moveSpeedB, bottom_RB.velocity.y));
         bottom_RB.velocity *= Mathf.Pow(1f - damping, Time.deltaTime * 10f);
     }
 

@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerBinding : MonoBehaviour
-{
+public class Chunks : MonoBehaviour {
 
     public Transform Player;
-    Player thePlayer;
+    CharacterController thePlayer;
 
     public Vector2 trgA;
     public Vector2 trgB;
@@ -38,15 +37,13 @@ public class PlayerBinding : MonoBehaviour
 
 
     // Use this for initialization
-    void Start()
-    {
-        thePlayer = GetComponent<Player>();
+    void Start() {
+        thePlayer = Player.gameObject.GetComponent<CharacterController>();
         headOfssetInit = headOffset;
     }
 
     // Update is called once per frame
-    void FixedUpdate()
-    {
+    void FixedUpdate() {
         DataCollect();
 
         Bind(A, idealPosA, trgDistA, ratioA, dampA);
@@ -61,7 +58,7 @@ public class PlayerBinding : MonoBehaviour
         float distBtwn = Vector2.Distance(A.position, B.position);
         Vector2 dirVecBtwn = (B.position - A.position).normalized;
         idealPosA = new Vector2(B.position.x + headOffset.x, B.position.y + headOffset.y);
-        idealPosB = A.position;
+        idealPosB = Player.position;
 
         States();
     }
@@ -69,7 +66,7 @@ public class PlayerBinding : MonoBehaviour
     void States()
     {
         if (thePlayer.i_prone) //if prone
-            headOffset = new Vector2(thePlayer.i_facingDir, 0f);
+            headOffset = Vector2.Lerp(headOffset, new Vector2(thePlayer.i_facingDir, 0f), 0.1f);
         else if (!thePlayer.i_prone && thePlayer.i_isRunning)//standing & running
         {
             //leaning
@@ -81,7 +78,7 @@ public class PlayerBinding : MonoBehaviour
             float distance = bobAmplitude * Mathf.Sin(theta);
             idealPosB = idealPosB + Vector2.up * distance;
         }
-        else headOffset = headOfssetInit;
+        else headOffset = Vector2.Lerp(headOffset, headOfssetInit, 0.1f);
     }
 
 
@@ -95,14 +92,14 @@ public class PlayerBinding : MonoBehaviour
         if (dist > 0f)
             dirVec = (idealPos - rb.position).normalized;
         else
-            dirVec = headOffset;
+            dirVec = Vector2.up;
 
         Vector2 newPos = rb.position - (trgDist - dist) * dirVec * strength;
         Vector2 trgPos = Vector2.zero;
 
         if (thePlayer.i_prone == false)
         {
-            trgPos = Vector2.Lerp(rb.position, newPos, dampVal);
+             trgPos = Vector2.Lerp(rb.position, newPos, dampVal);
         }
 
         else
@@ -111,13 +108,14 @@ public class PlayerBinding : MonoBehaviour
             //float binomial = newPos.x - rb.position.x;
             //newPos.y = ((binomial * binomial) +  1f);
 
-            trgPos = Vector2.Lerp(rb.position, newPos, dampVal);
+             trgPos = Vector2.Lerp(rb.position, newPos, dampVal);
         }
 
-        Vector2 dragforceA = -0.42f * rb.velocity.normalized * rb.velocity.sqrMagnitude;
-        rb.AddForce(dragforceA);
+        ////tryna bring some bounce back
+        //Vector2 dragforceA = -0.999f * rb.velocity.normalized * rb.velocity.sqrMagnitude;
+        //rb.AddForce(dragforceA);
+        //rb.AddForce(-dirVec * (trgDist - dist) * strength * 10f, ForceMode2D.Impulse);
 
-        rb.AddForce(-dirVec * (trgDist - dist) * strength * 10f, ForceMode2D.Impulse);
-
+        rb.MovePosition(trgPos);
     }
 }

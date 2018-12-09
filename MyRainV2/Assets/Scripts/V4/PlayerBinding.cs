@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Chunks : MonoBehaviour {
+public class PlayerBinding : MonoBehaviour
+{
 
     public Transform Player;
-    CharacterController thePlayer;
+    Player thePlayer;
 
     public Vector2 trgA;
     public Vector2 trgB;
@@ -37,13 +38,15 @@ public class Chunks : MonoBehaviour {
 
 
     // Use this for initialization
-    void Start() {
-        thePlayer = Player.gameObject.GetComponent<CharacterController>();
+    void Start()
+    {
+        thePlayer = GetComponent<Player>();
         headOfssetInit = headOffset;
     }
 
     // Update is called once per frame
-    void FixedUpdate() {
+    void FixedUpdate()
+    {
         DataCollect();
 
         Bind(A, idealPosA, trgDistA, ratioA, dampA);
@@ -58,7 +61,7 @@ public class Chunks : MonoBehaviour {
         float distBtwn = Vector2.Distance(A.position, B.position);
         Vector2 dirVecBtwn = (B.position - A.position).normalized;
         idealPosA = new Vector2(B.position.x + headOffset.x, B.position.y + headOffset.y);
-        idealPosB = Player.position;
+        idealPosB = A.position;
 
         States();
     }
@@ -92,14 +95,14 @@ public class Chunks : MonoBehaviour {
         if (dist > 0f)
             dirVec = (idealPos - rb.position).normalized;
         else
-            dirVec = Vector2.up;
+            dirVec = headOffset;
 
         Vector2 newPos = rb.position - (trgDist - dist) * dirVec * strength;
         Vector2 trgPos = Vector2.zero;
 
         if (thePlayer.i_prone == false)
         {
-             trgPos = Vector2.Lerp(rb.position, newPos, dampVal);
+            trgPos = Vector2.Lerp(rb.position, newPos, dampVal);
         }
 
         else
@@ -108,14 +111,14 @@ public class Chunks : MonoBehaviour {
             //float binomial = newPos.x - rb.position.x;
             //newPos.y = ((binomial * binomial) +  1f);
 
-             trgPos = Vector2.Lerp(rb.position, newPos, dampVal);
+            trgPos = Vector2.Lerp(rb.position, newPos, dampVal);
         }
 
-        //tryna bring some bounce back
         //Vector2 dragforceA = -0.42f * rb.velocity.normalized * rb.velocity.sqrMagnitude;
         //rb.AddForce(dragforceA);
         //rb.AddForce(-dirVec * (trgDist - dist) * strength * 10f, ForceMode2D.Impulse);
 
         rb.MovePosition(trgPos);
+
     }
 }
